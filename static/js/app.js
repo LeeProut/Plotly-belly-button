@@ -51,29 +51,36 @@ d3.json("./data/samples.json").then((importedData) => {
 
     //call demoBox function to read in the new value selected from the dropdown
     demoBox(newSample);
+    hBar(newSample);
 
 });
 }
 
-// added this function directly to the html
-// when the user selects a new id in the dropdown, call the data for that id
-// function optionChanged(newSample) {
-//     demoBox(newSample);
-// }
-
 // call the drop function to read in the new value selected from the dropdown
-// then return the demoBox function to render the selected data in the demographic info element on the page
 drop();
+
+// when the user selects a new id in the dropdown, call the data for that id
+function optionChanged(newSample) {
+    demoBox(newSample);
+    hBar(newSample);
+};
 
 
 // horizontal bar graph
 
 // read in the data from the json file
-d3.json("./data/samples.json").then((importedData) => {
+function hBar(choice){d3.json("./data/samples.json").then((importedData) => {
     console.log(importedData);  
 
-// set variable for retrieving the "samples" array from the data    
-var samplesArray = importedData.samples[0];
+// set variable for the samples array data 
+var samplesArray = importedData.samples;
+
+// set variable for filtering any ID number 
+var filterIDsamples = samplesArray.filter(row => row.id == choice);
+console.log(filterIDsamples);
+
+// set variable for filtering for any ID, passing in the first index  
+var samplesArray = filterIDsamples[0];
 console.log(samplesArray);
 
 // set variable for retrieving the sample_values for Each id in the sample array
@@ -88,7 +95,6 @@ console.log(otuIDs);
 var otuLabels = samplesArray.otu_labels;
 console.log(otuLabels);
 
-
 // sort data by sample_values to find top 10 OTUs for selected individual
 var sortedSamples = sampleValues.sort((a, b) => b.sample_values - a.sample_values);
 console.log(sortedSamples)
@@ -101,14 +107,7 @@ console.log(sortedOTUids);
 var sortedOTUlabels = otuLabels.sort((a, b) => b.otu_labels - a.otu_labels);
 console.log(sortedOTUlabels);
 
-//forEach id, sort the sample_values and return the top 10 sample_values
-
-// var sortedSamples = samples.sort(function(a, b) {
-//     return b.sample_values - a.sample_values;
-// });
-// console.log(sortedSamples);
-
-// find first 10 by slicing
+// find first 10 by slicing, reverse order for hbar 
 var topSamples = sortedSamples.slice(0, 10).reverse();
 console.log(topSamples);
 
@@ -119,24 +118,23 @@ var topOTUlabels = sortedOTUlabels.slice(0, 10).reverse();
 console.log(topOTUlabels);
 
 
-// select.on("change", function() {
-//     var value = d3.event.target.value;
-//     console.log(value);
-//     var
-// })
+// create labels for y axis, making an array with .map and adding "OTU" to the otu_ids values for each id number
+var hbarOTUids = topOTUids.map(id => `OTU ${id}`);
+console.log(hbarOTUids);
 
-// 
-
+// set the trace1 variable for the hbar 
 var trace1 = {
     x: topSamples,
-    y: topOTUids.map(id => `OTU ${id}`),
+    y: hbarOTUids,
     text: topOTUlabels,
     type: "bar",
     orientation: "h",
 };
 
+// set a variable for trace1
 var bellyData = [trace1];
 
+//set variable for layout
 var layout = {
     title: "Top 10 Microbial Species Present",
 };
@@ -144,4 +142,9 @@ var layout = {
 // Render the plot to the div tag with id "bar"
 Plotly.newPlot("bar", bellyData, layout);
 
+//adding hBar function to the optionChanged function above to respond to user input (newSample)
 });
+};
+
+
+
