@@ -179,7 +179,12 @@ var layout = {
     title: `<b>All Microbial Species Present for Test Subject ${choice}</b>`,
     showlegend: false,
     height: 600,
-    width: 1200
+    width: 1200,
+    xaxis: {
+        title: {
+            text: "OTU ID",
+        }
+    }
 };
 
 // Render the plot to the div tag with id "bubble"
